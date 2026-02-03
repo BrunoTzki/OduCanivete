@@ -1,0 +1,11 @@
+{
+  "name": "com.odu.random",
+  "version": "1.0.0",
+  "displayName": "Odu Random",
+  "description": "Biblioteca de funções aleatórias do Odu.",
+  "unity": "2021.3",
+  "author": {
+    "name": "João Rabello",
+    "email": "joaorabello1@gmail.com"
+  }
+}

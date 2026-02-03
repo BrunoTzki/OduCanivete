@@ -1,0 +1,11 @@
+{
+  "name": "com.odu.physics",
+  "version": "1.0.0",
+  "displayName": "Odu Physics",
+  "description": "Biblioteca de física do Odu.",
+  "unity": "2021.3",
+  "author": {
+    "name": "João Rabello",
+    "email": "joaorabello1@gmail.com"
+  }
+}
