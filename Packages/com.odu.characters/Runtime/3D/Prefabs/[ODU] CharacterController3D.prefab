@@ -41,8 +41,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 2944262012288074084}
-  - component: {fileID: 5252470930531787235}
+  - component: {fileID: 8873827855411926036}
   - component: {fileID: 5730863768794867215}
+  - component: {fileID: 5252470930531787235}
   m_Layer: 0
   m_Name: '[ODU] CharacterController3D'
   m_TagString: Untagged
@@ -66,29 +67,71 @@ Transform:
   - {fileID: 5930477363850608933}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!136 &5252470930531787235
-CapsuleCollider:
+--- !u!114 &8873827855411926036
+MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3184499902002834664}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
   m_Enabled: 1
-  serializedVersion: 2
-  m_Radius: 0.5
-  m_Height: 2
-  m_Direction: 1
-  m_Center: {x: 0, y: 0, z: 0}
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f50e5fa27f86c1a409ec56a33564da94, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _movementAction:
+    m_Name: Movement
+    m_Type: 0
+    m_ExpectedControlType: 
+    m_Id: 43331326-c765-4511-b073-f5467f02379b
+    m_Processors: 
+    m_Interactions: 
+    m_SingletonActionBindings:
+    - m_Name: Move
+      m_Id: 5ba6d869-a98a-40c3-99fc-fdc81166e0bf
+      m_Path: 2DVector
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Movement
+      m_Flags: 4
+    - m_Name: up
+      m_Id: b385f22e-16a4-40c4-bdbc-6c0a8968e7b6
+      m_Path: <Keyboard>/w
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Movement
+      m_Flags: 8
+    - m_Name: down
+      m_Id: 059e48f0-177d-45af-a86d-3feedb6462d4
+      m_Path: <Keyboard>/s
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Movement
+      m_Flags: 8
+    - m_Name: left
+      m_Id: fca63e87-24c4-4934-8e16-d1ab2b7a85da
+      m_Path: <Keyboard>/a
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Movement
+      m_Flags: 8
+    - m_Name: right
+      m_Id: cdd805f0-cb4c-45ad-8867-0d95cdfa3265
+      m_Path: <Keyboard>/d
+      m_Interactions: 
+      m_Processors: 
+      m_Groups: 
+      m_Action: Movement
+      m_Flags: 8
+    m_Flags: 0
+  _rigidbody: {fileID: 5730863768794867215}
+  _visualTransform: {fileID: 5930477363850608933}
+  _cameraTransform: {fileID: 0}
+  _speed: 3
 --- !u!54 &5730863768794867215
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -114,8 +157,31 @@ Rigidbody:
   m_UseGravity: 1
   m_IsKinematic: 0
   m_Interpolate: 0
-  m_Constraints: 0
+  m_Constraints: 112
   m_CollisionDetection: 0
+--- !u!136 &5252470930531787235
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3184499902002834664}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Radius: 0.5
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &7130541518605174983
 GameObject:
   m_ObjectHideFlags: 0
