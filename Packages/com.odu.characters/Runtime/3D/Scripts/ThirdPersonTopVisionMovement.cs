@@ -9,6 +9,20 @@ namespace OduLib.Systems.Characters.ThreeDimensional
         [SerializeField] private Transform _cameraTransform;
         [SerializeField] private float _speed;
 
+        public override void Enter()
+        {
+            base.Enter();
+
+            enabled = true;
+        }
+
+        public override void Exit()
+        {
+            base.Exit();
+
+            enabled = false;
+        }
+
         private void FixedUpdate()
         {
             MoveAndLook();

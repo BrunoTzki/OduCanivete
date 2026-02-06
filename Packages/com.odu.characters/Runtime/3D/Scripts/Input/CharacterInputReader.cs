@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace OduLib.Systems.Characters.ThreeDimensional
+namespace OduLib.Systems.Characters
 {
     public class CharacterInputReader : MonoBehaviour
     {
@@ -10,6 +10,8 @@ namespace OduLib.Systems.Characters.ThreeDimensional
 
         public Action<Vector2> MovePerformed;
         public Action MoveCanceled;
+
+        public Action ChangeTypePerformed;
 
         private ThirdPersonMovement inputActions;
 
@@ -19,6 +21,7 @@ namespace OduLib.Systems.Characters.ThreeDimensional
 
             inputActions.Movement.Move.performed += InputPerform;
             inputActions.Movement.Move.canceled += InputCancel;
+            inputActions.Movement.Change.performed += Change;
 
             inputActions.Enable();
         }
@@ -27,8 +30,14 @@ namespace OduLib.Systems.Characters.ThreeDimensional
         {
             inputActions.Movement.Move.performed -= InputPerform;
             inputActions.Movement.Move.canceled -= InputCancel;
+            inputActions.Movement.Change.performed -= Change;
 
             inputActions.Disable();
+        }
+
+        private void Change(InputAction.CallbackContext context)
+        {
+            ChangeTypePerformed?.Invoke();
         }
 
         private void InputPerform(InputAction.CallbackContext callbackContext)
