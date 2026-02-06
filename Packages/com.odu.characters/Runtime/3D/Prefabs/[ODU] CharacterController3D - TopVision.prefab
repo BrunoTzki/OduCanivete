@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 5730863768794867215}
   - component: {fileID: 5252470930531787235}
   m_Layer: 0
-  m_Name: '[ODU] CharacterController3D'
+  m_Name: '[ODU] CharacterController3D - TopVision'
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -79,59 +79,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f50e5fa27f86c1a409ec56a33564da94, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _movementAction:
-    m_Name: Movement
-    m_Type: 0
-    m_ExpectedControlType: 
-    m_Id: 43331326-c765-4511-b073-f5467f02379b
-    m_Processors: 
-    m_Interactions: 
-    m_SingletonActionBindings:
-    - m_Name: Move
-      m_Id: 5ba6d869-a98a-40c3-99fc-fdc81166e0bf
-      m_Path: 2DVector
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement
-      m_Flags: 4
-    - m_Name: up
-      m_Id: b385f22e-16a4-40c4-bdbc-6c0a8968e7b6
-      m_Path: <Keyboard>/w
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement
-      m_Flags: 8
-    - m_Name: down
-      m_Id: 059e48f0-177d-45af-a86d-3feedb6462d4
-      m_Path: <Keyboard>/s
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement
-      m_Flags: 8
-    - m_Name: left
-      m_Id: fca63e87-24c4-4934-8e16-d1ab2b7a85da
-      m_Path: <Keyboard>/a
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement
-      m_Flags: 8
-    - m_Name: right
-      m_Id: cdd805f0-cb4c-45ad-8867-0d95cdfa3265
-      m_Path: <Keyboard>/d
-      m_Interactions: 
-      m_Processors: 
-      m_Groups: 
-      m_Action: Movement
-      m_Flags: 8
-    m_Flags: 0
   _rigidbody: {fileID: 5730863768794867215}
   _visualTransform: {fileID: 5930477363850608933}
   _cameraTransform: {fileID: 0}
-  _speed: 3
+  _speed: 5
 --- !u!54 &5730863768794867215
 Rigidbody:
   m_ObjectHideFlags: 0

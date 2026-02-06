@@ -2,7 +2,7 @@ using UnityEngine;
 
 namespace OduLib.Systems.Characters.ThreeDimensional
 {
-    public class ThirdPersonFreeLookMovement : CharacterMovement
+    public class ThirdPersonTopVisionMovement : CharacterMovement
     {
         [SerializeField] private Rigidbody _rigidbody;
         [SerializeField] private Transform _visualTransform;
@@ -14,9 +14,6 @@ namespace OduLib.Systems.Characters.ThreeDimensional
             base.Enter();
 
             enabled = true;
-
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
         }
 
         public override void Exit()
@@ -24,9 +21,6 @@ namespace OduLib.Systems.Characters.ThreeDimensional
             base.Exit();
 
             enabled = false;
-
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
         }
 
         private void FixedUpdate()
