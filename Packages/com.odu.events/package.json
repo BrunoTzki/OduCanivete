@@ -1,0 +1,11 @@
+{
+  "name": "com.odu.events",
+  "version": "1.0.0",
+  "displayName": "Odu Events",
+  "description": "Utilidades de gatilhos de eventos e seus tipos. Contém também usabilidades de corrotinas.",
+  "unity": "2021.3",
+  "author": {
+    "name": "João Rabello",
+    "email": "joaorabello1@gmail.com"
+  }
+}

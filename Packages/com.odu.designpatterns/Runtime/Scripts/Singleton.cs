@@ -1,6 +1,8 @@
+#define DESIGNPATTERNS_PRESENT
+
 using UnityEngine;
 
-namespace Odu.DesignPatterns
+namespace OduLib.Canivete.DesignPatterns
 {
     public class Singleton<T> : MonoBehaviour where T : Component
     {

@@ -1,0 +1,25 @@
+{
+    "name": "Odu.Events",
+    "rootNamespace": "",
+    "references": [
+        "GUID:4307f53044263cf4b835bd812fc161a4",
+        "GUID:f75d7a2a31192fb4f9e5364a79e198ee"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [
+        "CINEMACHINE_PRESENT"
+    ],
+    "versionDefines": [
+        {
+            "name": "com.unity.cinemachine",
+            "expression": "3.1.5",
+            "define": "CINEMACHINE_PRESENT"
+        }
+    ],
+    "noEngineReferences": false
+}

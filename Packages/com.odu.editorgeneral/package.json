@@ -1,14 +1,11 @@
 {
-  "name": "com.odu.audio",
+  "name": "com.odu.editorgeneral",
   "version": "1.0.0",
-  "displayName": "Odu Audio",
-  "description": "Conjunto de utilidades para controle de áudio.",
+  "displayName": "Odu Editor General",
+  "description": "Pacote de funcionalidades de editor, como builder e observador de play mode events.",
   "unity": "2021.3",
   "author": {
     "name": "João Rabello",
     "email": "joaorabello1@gmail.com"
-  }
-  "dependencies": {
-    "com.fmod.unity": "2.02.07"
   }
 }
