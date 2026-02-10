@@ -1,0 +1,11 @@
+{
+  "name": "com.odu.input",
+  "version": "1.0.0",
+  "displayName": "Odu Input",
+  "description": "Pacote de utilidades para input do Unity e dispositivos de entrada.",
+  "unity": "2021.3",
+  "author": {
+    "name": "João Rabello",
+    "email": "joaorabello1@gmail.com"
+  }
+}
