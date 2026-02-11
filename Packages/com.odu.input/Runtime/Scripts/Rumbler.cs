@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -34,6 +33,21 @@ namespace OduLib.Canivete.Input {
             float highFrequency = GetModeValue(highFrequencyMode);
             GamepadRumble(lowFrequency, highFrequency, duration);
         }
+
+        /// <summary>
+        /// Inicia a vibração do gamepad usando modos predefinidos para baixa e alta frequência.
+        /// </summary>
+        /// <param name="pad">O gamepad a ser vibrado.</param>
+        /// <param name="lowFrequencyMode">Modo de intensidade para a baixa frequência do motor.</param>
+        /// <param name="highFrequencyMode">Modo de intensidade para a alta frequência do motor.</param>
+        /// <param name="duration">Duração da vibração em segundos.</param>
+        public static void GamepadRumble(Gamepad pad, VibrationMode lowFrequencyMode, VibrationMode highFrequencyMode, float duration)
+        {
+            float lowFrequency = GetModeValue(lowFrequencyMode);
+            float highFrequency = GetModeValue(highFrequencyMode);
+            GamepadRumble(pad, lowFrequency, highFrequency, duration);
+        }
+
         /// <summary>
         /// Inicia a vibração do gamepad fornecendo valores diretos para baixa e alta frequência.
         /// </summary>
@@ -44,9 +58,20 @@ namespace OduLib.Canivete.Input {
         {
             Gamepad pad = Gamepad.current;
 
+            GamepadRumble(pad, lowFrequency, highFrequency, duration);
+        }
+        
+        /// <summary>
+        /// Inicia a vibração do gamepad fornecendo valores diretos para baixa e alta frequência.
+        /// </summary>
+        /// <param name="pad">O gamepad a ser vibrado.</param>
+        /// <param name="lowFrequency">Valor da baixa frequência (0.0 a 1.0).</param>
+        /// <param name="highFrequency">Valor da alta frequência (0.0 a 1.0).</param>
+        /// <param name="duration">Duração da vibração em segundos.</param>
+        public static void GamepadRumble(Gamepad pad, float lowFrequency, float highFrequency, float duration)
+        {
             if (pad == null) return;
 
-            pad.SetMotorSpeeds(lowFrequency, highFrequency);
 #if EVENTS_PRESENT
             CoroutineRunner.Instance.RunCoroutine(StopRumble(duration, pad));
 #else
@@ -55,13 +80,22 @@ namespace OduLib.Canivete.Input {
             StartCoroutine(StopRumble(duration, pad));
             GameObject.Destroy(rumblerObject, duration+0.1f);
 #endif
+            pad.SetMotorSpeeds(lowFrequency, highFrequency);
         }
+
         /// <summary>
         /// Interrompe a vibração atual do gamepad, pausando as haptics.
         /// </summary>
         public static void StopRumble(){
             Gamepad pad = Gamepad.current;
 
+            StopRumble(pad);
+        }
+        /// <summary>
+        /// Interrompe a vibração atual do gamepad, pausando as haptics.
+        /// </summary> 
+        /// <param name="pad">O gamepad cuja vibração deve ser interrompida.</param>
+        public static void StopRumble(Gamepad pad){
             if (pad == null) return;
 
             pad.PauseHaptics();
