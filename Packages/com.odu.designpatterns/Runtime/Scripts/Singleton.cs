@@ -4,12 +4,16 @@ using UnityEngine;
 
 namespace OduLib.Canivete.DesignPatterns
 {
+    /// <summary>
+    /// Classe base para implementar o padrão Singleton que retorna uma única instância encontrada na cena.
+    /// </summary>
+    /// <typeparam name="T">O tipo de componente que deve derivar de MonoBehaviour</typeparam>
     public class Singleton<T> : MonoBehaviour where T : Component
     {
         private static T _instance;
 
         /// <summary>
-        /// Retorna uma inst�ncia da classe Singleton encontrada no primeiro objeto da cena que possuir essa classe em seu script
+        /// Retorna uma instância da classe Singleton encontrada no primeiro objeto da cena que possuir essa classe em seu script
         /// </summary>
         public static T Instance
         {
