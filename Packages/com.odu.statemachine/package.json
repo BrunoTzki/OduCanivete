@@ -1,0 +1,11 @@
+{
+  "name": "com.odu.statemachine",
+  "version": "1.0.0",
+  "displayName": "Odu State Machine",
+  "description": "Pacote com funcionalidades para máquinas de estado.",
+  "unity": "2021.3",
+  "author": {
+    "name": "João Rabello",
+    "email": "joaorabello1@gmail.com"
+  }
+}
