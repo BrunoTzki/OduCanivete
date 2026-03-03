@@ -8,110 +8,94 @@ namespace OduLib.Canivete.Serialization {
     /// Serviço genérico para serialização e deserialização de dados em arquivos de um projeto Unity.
     /// Oferece funcionalidades de salvar, carregar e deletar dados com suporte a criptografia e backup automático.
     /// </summary>
-    /// <typeparam name="Data">O tipo de dados a ser serializado. Deve ser uma classe.</typeparam>
-    public class FileDataService<Data> where Data : class
+    /// <typeparam name="TData">O tipo de dados a ser serializado. Deve ser uma classe.</typeparam>
+    public class FileDataService<TData> : IDataService<TData> where TData : class
     {
+        private ISerializer _serializer;
         private string _dataDirPath = "";
         private string _dataFileName = "";
         
         private string _dataFileExtension = "";
-        private readonly string _encryptionCodeWord = "P,A*M+0U@,G5U-m-=h/nS}+Y@3Ln$}{JP.z1dcg:JPCu3#GxMM";
         
         private readonly string _backupExtension = ".bak";
-        private bool _useEncryption = false;
         
         /// <summary>
         /// Inicializa uma nova instância do serviço de dados de arquivo.
         /// </summary>
+        /// <param name="serializer">O objeto de serialização a ser usado. Por padrão, é usado o JsonSerializer.</param>
         /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
         /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
         /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
         /// <param name="backupExtension">A extensão usada para arquivos de backup.</param>
-        /// <param name="encryptionCodeWord">A chave de criptografia a ser usada. Se for null, será usada a chave padrão.</param>
-        /// <param name="useEncryption">Indica se os dados devem ser criptografados ao salvar.</param>
-        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension, bool useEncryption, string encryptionCodeWord, string backupExtension){
+        public FileDataService(ISerializer serializer, string dataDirPath, string dataFileName, string dataFileExtension,  string backupExtension){
+            _serializer = serializer;
             _dataDirPath = dataDirPath;
             _dataFileName = dataFileName;
             _dataFileExtension = dataFileExtension;
-            _useEncryption = useEncryption;
             _backupExtension = backupExtension;
-            if(encryptionCodeWord != null){
-                _encryptionCodeWord = encryptionCodeWord;
-            }
         }
 
         /// <summary>
-        /// Inicializa uma nova instância do serviço de dados de arquivo. (Sem criptografia)
+        /// Inicializa uma nova instância do serviço de dados de arquivo.
+        /// Utiliza o JsonSerializer padrão sem criptografia e com extensão de backup ".bak".
         /// </summary>
         /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
         /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
         /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
         public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension) 
-            : this(dataDirPath, dataFileName, dataFileExtension, false, null, ".bak")
+            : this(new JsonSerializer(), dataDirPath, dataFileName, dataFileExtension, ".bak")
         {
         }
 
         /// <summary>
-        /// Inicializa uma nova instância do serviço de dados de arquivo. (Sem criptografia)
+        /// Inicializa uma nova instância do serviço de dados de arquivo.
+        /// Utiliza o JsonSerializer padrão sem criptografia.
         /// </summary>
         /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
         /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
         /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
         /// <param name="backupExtension">A extensão usada para arquivos de backup.</param>
         public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension, string backupExtension)
-            : this(dataDirPath, dataFileName, dataFileExtension, false, null, backupExtension)
+            : this(new JsonSerializer(), dataDirPath, dataFileName, dataFileExtension, backupExtension)
         {
         }
         /// <summary>
         /// Inicializa uma nova instância do serviço de dados de arquivo.
+        /// Utiliza extensão de backup ".bak".
         /// </summary>
         /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
         /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
         /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
-        /// <param name="encryptionCodeWord">A chave de criptografia a ser usada. Se for null, será usada a chave padrão.</param>
-        /// <param name="useEncryption">Indica se os dados devem ser criptografados ao salvar.</param>
-        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension, bool useEncryption, string encryptionCodeWord)
-            : this(dataDirPath, dataFileName, dataFileExtension, useEncryption, encryptionCodeWord, ".bak")
+        public FileDataService(ISerializer serializer, string dataDirPath, string dataFileName, string dataFileExtension)
+            : this(serializer, dataDirPath, dataFileName, dataFileExtension, ".bak")
         {
         }
 
         /// <summary>
         /// Obtém o caminho completo do arquivo de dados para um perfil específico.
         /// </summary>
-        /// <param name="profileID">O identificador do perfil.</param>
+        /// <param name="saveID">O identificador do perfil.</param>
         /// <param name="fileName">O nome do arquivo.</param>
         /// <returns>O caminho completo do arquivo.</returns>
-        public string GetPathToFile(string profileID, string fileName){
-            return Path.Combine(_dataDirPath, profileID, string.Concat(fileName,_dataFileExtension));
+        public string GetPathToFile(string saveID, string fileName){
+            return Path.Combine(_dataDirPath, saveID, string.Concat(fileName,_dataFileExtension));
         }
 
-        /// <summary>
-        /// Carrega dados do arquivo para um perfil específico.
-        /// </summary>
-        /// <param name="profileID">O identificador do perfil.</param>
-        /// <param name="allowRestoreFromBackup">Se verdadeiro, tentará restaurar do arquivo de backup em caso de erro.</param>
-        /// <returns>Os dados carregados ou null se o perfil não existir.</returns>
-        public Data Load(string profileID, bool allowRestoreFromBackup = true){
-            if(profileID == null){
+        public TData Load(string saveID, bool allowRestoreFromBackup = true){
+            if(saveID == null){
                 return null;
             }
 
-            string fullPath = GetPathToFile(profileID, _dataFileName);
+            string fullPath = GetPathToFile(saveID, _dataFileName);
 
-            Data loadedData = null;
+            TData loadedData = null;
 
             if(File.Exists(fullPath)){
                 try 
                 {
-                    // load the serialized data from the file
                     string dataToLoad = ReadFromFile(fullPath);
 
-                    if(_useEncryption){
-                        dataToLoad = EncryptDecrypt(dataToLoad);
-                    }
-
-                    // deserialize the data from Json back into the C# object
-                    loadedData = JsonUtility.FromJson<Data>(dataToLoad);
+                    loadedData = _serializer.Deserialize<TData>(dataToLoad);
                 }
                 catch (Exception e) 
                 {
@@ -119,7 +103,7 @@ namespace OduLib.Canivete.Serialization {
                         Debug.LogWarning("Carregamento de dados falhou. Tentando retornar para um arquivo de backup. \n" + e);
                         bool rollbackSuccess = AttemptRollBack(fullPath);
                         if(rollbackSuccess){
-                            loadedData = Load(profileID, false);
+                            loadedData = Load(saveID, false);
                         }
                         
                     } else {
@@ -148,30 +132,19 @@ namespace OduLib.Canivete.Serialization {
             return dataToLoad;
         }
 
-        /// <summary>
-        /// Salva os dados em arquivo para um perfil específico com verificação e backup automático.
-        /// </summary>
-        /// <param name="profileID">O identificador do perfil.</param>
-        /// <param name="data">Os dados a serem salvos.</param>
-        /// <returns>Verdadeiro se o salvamento foi bem-sucedido, falso caso contrário.</returns>
-        public bool Save(string profileID, Data data){
-            if(profileID == null){
+        public bool Save(string saveID, TData data){
+            if(saveID == null){
                 return false;
             }
 
-            string fullPath = GetPathToFile(profileID, _dataFileName);
+            string fullPath = GetPathToFile(saveID, _dataFileName);
             string backupFilePath = string.Concat(fullPath,_backupExtension);
 
             try 
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(fullPath));
 
-                string dataToStore = JsonUtility.ToJson(data, true);
-
-                if(_useEncryption){
-                    dataToStore = EncryptDecrypt(dataToStore);
-                }
-
+                string dataToStore = _serializer.Serialize(data);
 
                 using (FileStream stream = new FileStream(fullPath, FileMode.Create))
                 {
@@ -182,7 +155,7 @@ namespace OduLib.Canivete.Serialization {
                 }
 
                 //Verificar se save é válido
-                Data verifiedData = Load(profileID, _useEncryption);
+                TData verifiedData = Load(saveID);
                 if(verifiedData != null){
                     File.Copy(fullPath, backupFilePath, true);
                 } else {
@@ -198,16 +171,12 @@ namespace OduLib.Canivete.Serialization {
             }
         }
 
-        /// <summary>
-        /// Deleta todos os dados associados a um perfil específico.
-        /// </summary>
-        /// <param name="profileID">O identificador do perfil a ser deletado.</param>
-        public void Delete(string profileID){
-            if (profileID == null){
+        public void Delete(string saveID){
+            if (saveID == null){
                 return;
             }
 
-            string fullPath = GetPathToFile(profileID, _dataFileName);
+            string fullPath = GetPathToFile(saveID, _dataFileName);
             try 
             {
                 if (File.Exists(fullPath)) 
@@ -222,16 +191,12 @@ namespace OduLib.Canivete.Serialization {
             catch (Exception e) 
             {
                 Debug.LogError("Falhou em deletar dados do perfil para ProfileID: " 
-                    + profileID + " no diretório: " + fullPath + "\n" + e);
+                    + saveID + " no diretório: " + fullPath + "\n" + e);
             }
         }
 
-        /// <summary>
-        /// Carrega todos os perfis disponíveis no diretório de dados.
-        /// </summary>
-        /// <returns>Um dicionário contendo os IDs dos perfis e seus dados correspondentes.</returns>
-        public Dictionary<string, Data> GetProfiles(){
-            Dictionary<string, Data> profileDictionary = new Dictionary<string, Data>();
+        public Dictionary<string, TData> ListSaves(){
+            Dictionary<string, TData> profileDictionary = new Dictionary<string, TData>();
 
             if (!Directory.Exists(_dataDirPath))
             {
@@ -242,42 +207,28 @@ namespace OduLib.Canivete.Serialization {
             IEnumerable<DirectoryInfo> dirInfos = new DirectoryInfo(_dataDirPath).EnumerateDirectories();
             foreach (DirectoryInfo dirInfo in dirInfos) 
             {
-                string profileID = dirInfo.Name;
+                string saveID = dirInfo.Name;
 
-                string fullPath = GetPathToFile(profileID, _dataFileName);
+                string fullPath = GetPathToFile(saveID, _dataFileName);
                 if (!File.Exists(fullPath))
                 {
                     Debug.LogWarning("Ignorando diretório ao carregar todos os perfis pois este não contém dados: "
-                        + profileID);
+                        + saveID);
                     continue;
                 }
 
-                Data profileData = Load(profileID, _useEncryption);
+                TData profileData = Load(saveID);
                 if (profileData != null) 
                 {
-                    profileDictionary.Add(profileID, profileData);
+                    profileDictionary.Add(saveID, profileData);
                 }
                 else 
                 {
-                    Debug.LogError("Tentou carregar o perfil mas algo deu errado. ProfileId: " + profileID);
+                    Debug.LogError("Tentou carregar o perfil mas algo deu errado. ProfileId: " + saveID);
                 }
             }
 
             return profileDictionary;
-        }
-
-        /// <summary>
-        /// Criptografa ou descriptografa uma string usando a chave de criptografia padrão.
-        /// Utiliza uma operação XOR para modificar os caracteres da string com base na chave de criptografia.
-        /// </summary>
-        /// <param name="data">Os dados a serem criptografados ou descriptografados.</param>
-        /// <returns>Os dados após a operação de criptografia/descriptografia.</returns>
-        private string EncryptDecrypt(string data){
-            string modifiedData = "";
-            for(int i = 0; i < data.Length; i++){
-                modifiedData += (char) (data[i] ^ _encryptionCodeWord[i % _encryptionCodeWord.Length]);
-            }
-            return modifiedData;
         }
 
         /// <summary>
