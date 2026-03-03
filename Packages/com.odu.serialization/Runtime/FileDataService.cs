@@ -18,6 +18,7 @@ namespace OduLib.Canivete.Serialization {
         private readonly string _encryptionCodeWord = "P,A*M+0U@,G5U-m-=h/nS}+Y@3Ln$}{JP.z1dcg:JPCu3#GxMM";
         
         private readonly string _backupExtension = ".bak";
+        private bool _useEncryption = false;
         
         /// <summary>
         /// Inicializa uma nova instância do serviço de dados de arquivo.
@@ -27,14 +28,51 @@ namespace OduLib.Canivete.Serialization {
         /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
         /// <param name="backupExtension">A extensão usada para arquivos de backup.</param>
         /// <param name="encryptionCodeWord">A chave de criptografia a ser usada. Se for null, será usada a chave padrão.</param>
-        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension, string backupExtension = ".bak", string encryptionCodeWord = null){
+        /// <param name="useEncryption">Indica se os dados devem ser criptografados ao salvar.</param>
+        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension, bool useEncryption, string encryptionCodeWord, string backupExtension){
             _dataDirPath = dataDirPath;
             _dataFileName = dataFileName;
             _dataFileExtension = dataFileExtension;
+            _useEncryption = useEncryption;
             _backupExtension = backupExtension;
             if(encryptionCodeWord != null){
                 _encryptionCodeWord = encryptionCodeWord;
             }
+        }
+
+        /// <summary>
+        /// Inicializa uma nova instância do serviço de dados de arquivo. (Sem criptografia)
+        /// </summary>
+        /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
+        /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
+        /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
+        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension) 
+            : this(dataDirPath, dataFileName, dataFileExtension, false, null, ".bak")
+        {
+        }
+
+        /// <summary>
+        /// Inicializa uma nova instância do serviço de dados de arquivo. (Sem criptografia)
+        /// </summary>
+        /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
+        /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
+        /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
+        /// <param name="backupExtension">A extensão usada para arquivos de backup.</param>
+        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension, string backupExtension)
+            : this(dataDirPath, dataFileName, dataFileExtension, false, null, backupExtension)
+        {
+        }
+        /// <summary>
+        /// Inicializa uma nova instância do serviço de dados de arquivo.
+        /// </summary>
+        /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
+        /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
+        /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
+        /// <param name="encryptionCodeWord">A chave de criptografia a ser usada. Se for null, será usada a chave padrão.</param>
+        /// <param name="useEncryption">Indica se os dados devem ser criptografados ao salvar.</param>
+        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension, bool useEncryption, string encryptionCodeWord)
+            : this(dataDirPath, dataFileName, dataFileExtension, useEncryption, encryptionCodeWord, ".bak")
+        {
         }
 
         /// <summary>
@@ -51,10 +89,9 @@ namespace OduLib.Canivete.Serialization {
         /// Carrega dados do arquivo para um perfil específico.
         /// </summary>
         /// <param name="profileID">O identificador do perfil.</param>
-        /// <param name="useEncryption">Se verdadeiro, os dados serão descriptografados ao carregar.</param>
         /// <param name="allowRestoreFromBackup">Se verdadeiro, tentará restaurar do arquivo de backup em caso de erro.</param>
         /// <returns>Os dados carregados ou null se o perfil não existir.</returns>
-        public Data Load(string profileID, bool useEncryption, bool allowRestoreFromBackup = true){
+        public Data Load(string profileID, bool allowRestoreFromBackup = true){
             if(profileID == null){
                 return null;
             }
@@ -69,7 +106,7 @@ namespace OduLib.Canivete.Serialization {
                     // load the serialized data from the file
                     string dataToLoad = ReadFromFile(fullPath);
 
-                    if(useEncryption){
+                    if(_useEncryption){
                         dataToLoad = EncryptDecrypt(dataToLoad);
                     }
 
@@ -82,7 +119,7 @@ namespace OduLib.Canivete.Serialization {
                         Debug.LogWarning("Carregamento de dados falhou. Tentando retornar para um arquivo de backup. \n" + e);
                         bool rollbackSuccess = AttemptRollBack(fullPath);
                         if(rollbackSuccess){
-                            loadedData = Load(profileID, useEncryption, false);
+                            loadedData = Load(profileID, false);
                         }
                         
                     } else {
@@ -116,9 +153,8 @@ namespace OduLib.Canivete.Serialization {
         /// </summary>
         /// <param name="profileID">O identificador do perfil.</param>
         /// <param name="data">Os dados a serem salvos.</param>
-        /// <param name="useEncryption">Se verdadeiro, os dados serão criptografados antes de salvar.</param>
         /// <returns>Verdadeiro se o salvamento foi bem-sucedido, falso caso contrário.</returns>
-        public bool Save(string profileID, Data data, bool useEncryption){
+        public bool Save(string profileID, Data data){
             if(profileID == null){
                 return false;
             }
@@ -132,7 +168,7 @@ namespace OduLib.Canivete.Serialization {
 
                 string dataToStore = JsonUtility.ToJson(data, true);
 
-                if(useEncryption){
+                if(_useEncryption){
                     dataToStore = EncryptDecrypt(dataToStore);
                 }
 
@@ -146,7 +182,7 @@ namespace OduLib.Canivete.Serialization {
                 }
 
                 //Verificar se save é válido
-                Data verifiedData = Load(profileID, useEncryption);
+                Data verifiedData = Load(profileID, _useEncryption);
                 if(verifiedData != null){
                     File.Copy(fullPath, backupFilePath, true);
                 } else {
@@ -193,9 +229,8 @@ namespace OduLib.Canivete.Serialization {
         /// <summary>
         /// Carrega todos os perfis disponíveis no diretório de dados.
         /// </summary>
-        /// <param name="useEncryption">Se verdadeiro, os dados serão descriptografados ao carregar.</param>
         /// <returns>Um dicionário contendo os IDs dos perfis e seus dados correspondentes.</returns>
-        public Dictionary<string, Data> GetProfiles(bool useEncryption){
+        public Dictionary<string, Data> GetProfiles(){
             Dictionary<string, Data> profileDictionary = new Dictionary<string, Data>();
 
             if (!Directory.Exists(_dataDirPath))
@@ -217,7 +252,7 @@ namespace OduLib.Canivete.Serialization {
                     continue;
                 }
 
-                Data profileData = Load(profileID, useEncryption);
+                Data profileData = Load(profileID, _useEncryption);
                 if (profileData != null) 
                 {
                     profileDictionary.Add(profileID, profileData);
@@ -233,6 +268,7 @@ namespace OduLib.Canivete.Serialization {
 
         /// <summary>
         /// Criptografa ou descriptografa uma string usando a chave de criptografia padrão.
+        /// Utiliza uma operação XOR para modificar os caracteres da string com base na chave de criptografia.
         /// </summary>
         /// <param name="data">Os dados a serem criptografados ou descriptografados.</param>
         /// <returns>Os dados após a operação de criptografia/descriptografia.</returns>
