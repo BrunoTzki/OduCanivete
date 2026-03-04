@@ -5,24 +5,50 @@ using UnityEngine;
 
 namespace OduLib.Canivete.Serialization {
     /// <summary>
-    /// Serviço genérico para serialização e deserialização de dados em arquivos de um projeto Unity.
+    /// Classe de parâmetros para configurar o serviço de dados de arquivo. Permite definir o serializador, diretório de dados, nome do arquivo, extensão do arquivo e extensão de backup.
+    /// </summary>
+    public class FileDataServiceParams
+    {
+        /// <summary>
+        /// O objeto de serialização a ser usado. Por padrão, é usado o <see cref="JsonSerializer"/> sem criptografia.
+        /// </summary>
+        public ISerializer Serializer = new JsonSerializer();
+        /// <summary>
+        /// O caminho do diretório onde os dados serão armazenados. Por padrão, é usado <see cref="Application.persistentDataPath"/>.
+         /// </summary>
+        public string DataDirPath = Application.persistentDataPath;
+        /// <summary>
+        /// O nome do arquivo dos dados (sem extensão).
+        /// </summary>
+        public string DataFileName = "";
+        /// <summary>
+        /// A extensão do arquivo de dados. Por padrão, é usado ".json".
+        /// </summary>
+        public string DataFileExtension = ".json";
+        /// <summary>
+        /// A extensão usada para arquivos de backup. Por padrão, é usado ".bak".
+        /// </summary>
+        public string BackupExtension = ".bak";
+    }
+    /// <summary>
+    /// Serviço genérico para serialização e deserialização de dados em arquivos de um projeto Unity.<br/>
     /// Oferece funcionalidades de salvar, carregar e deletar dados com suporte a criptografia e backup automático.
     /// </summary>
     /// <typeparam name="TData">O tipo de dados a ser serializado. Deve ser uma classe.</typeparam>
     public class FileDataService<TData> : IDataService<TData> where TData : class
     {
         private ISerializer _serializer;
-        private string _dataDirPath = "";
-        private string _dataFileName = "";
+        private string _dataDirPath;
+        private string _dataFileName;
         
-        private string _dataFileExtension = "";
-        
-        private readonly string _backupExtension = ".bak";
-        
+        private string _dataFileExtension;
+        private readonly string _backupExtension;
+
+#region Construtores
         /// <summary>
         /// Inicializa uma nova instância do serviço de dados de arquivo.
         /// </summary>
-        /// <param name="serializer">O objeto de serialização a ser usado. Por padrão, é usado o JsonSerializer.</param>
+        /// <param name="serializer">O objeto de serialização a ser usado.</param>
         /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
         /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
         /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
@@ -34,42 +60,14 @@ namespace OduLib.Canivete.Serialization {
             _dataFileExtension = dataFileExtension;
             _backupExtension = backupExtension;
         }
-
         /// <summary>
         /// Inicializa uma nova instância do serviço de dados de arquivo.
-        /// Utiliza o JsonSerializer padrão sem criptografia e com extensão de backup ".bak".
         /// </summary>
-        /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
-        /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
-        /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
-        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension) 
-            : this(new JsonSerializer(), dataDirPath, dataFileName, dataFileExtension, ".bak")
+        /// <param name="parameters">Um objeto <see cref="FileDataServiceParams"/> contendo os parâmetros de configuração para o serviço de dados de arquivo.</param>
+        public FileDataService(FileDataServiceParams parameters) : this(parameters.Serializer, parameters.DataDirPath, parameters.DataFileName, parameters.DataFileExtension, parameters.BackupExtension)
         {
         }
-
-        /// <summary>
-        /// Inicializa uma nova instância do serviço de dados de arquivo.
-        /// Utiliza o JsonSerializer padrão sem criptografia.
-        /// </summary>
-        /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
-        /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
-        /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
-        /// <param name="backupExtension">A extensão usada para arquivos de backup.</param>
-        public FileDataService(string dataDirPath, string dataFileName, string dataFileExtension, string backupExtension)
-            : this(new JsonSerializer(), dataDirPath, dataFileName, dataFileExtension, backupExtension)
-        {
-        }
-        /// <summary>
-        /// Inicializa uma nova instância do serviço de dados de arquivo.
-        /// Utiliza extensão de backup ".bak".
-        /// </summary>
-        /// <param name="dataDirPath">O caminho do diretório onde os dados serão armazenados.</param>
-        /// <param name="dataFileName">O nome do arquivo de dados (sem extensão).</param>
-        /// <param name="dataFileExtension">A extensão do arquivo de dados (ex: .json).</param>
-        public FileDataService(ISerializer serializer, string dataDirPath, string dataFileName, string dataFileExtension)
-            : this(serializer, dataDirPath, dataFileName, dataFileExtension, ".bak")
-        {
-        }
+#endregion
 
         /// <summary>
         /// Obtém o caminho completo do arquivo de dados para um perfil específico.
